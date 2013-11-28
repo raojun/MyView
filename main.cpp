@@ -17,6 +17,7 @@
 
 #include <QApplication>
 #include <QTime>
+#include <QTimer>
 #include "myitem.h"
 #include "myview.h"
 
@@ -37,6 +38,21 @@ int main(int argc,char* argv[])
     view.setScene(&scene);
     view.setBackgroundBrush(QPixmap("../myView/background.png"));
     view.show();
+
+    QTimer timer;//创建一个定时器，当定时器溢出是会自动调用场景的advance()函数
+    QObject::connect(&timer,SIGNAL(timeout()),&scene,SLOT(advance()));
+    timer.start(1000);
+
+    MyItem *item1=new MyItem;//创建图形项
+    item1->setColor(Qt::blue);
+    MyItem *item2=new MyItem;
+    item2->setColor(Qt::green);
+    QGraphicsItemGroup *group=new QGraphicsItemGroup;//定义一个图形项组
+    group->addToGroup(item1);
+    group->addToGroup(item2);
+    group->setFlag(QGraphicsItem::ItemIsMovable);
+    item2->setPos(30,0);
+    scene.addItem(group);
 
     return app.exec();
 }

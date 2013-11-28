@@ -23,7 +23,7 @@ QRectF MyItem::boundingRect() const
 
 void MyItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)//执行实际的绘图操作
 {
-    if(hasFocus())//如果获得焦点
+    if(hasFocus()||!collidingItems().isEmpty())//如果获得焦点或者图形项列表不为空
     {
         painter->setPen(QPen(QColor(255,255,255,200)));
     }
@@ -128,4 +128,50 @@ void MyItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         setPos(0,0);
     }
+}
+
+//动画
+void MyItem::advance(int phase)
+{
+    /*
+     *调用场景的advance()函数就会自动调用场景中所有图形项的advance()函数，
+     *而且图形项的advance()函数会被分为两个阶段调用两次，第一次phase为0，
+     *告知所有图形项场景将要改变；第二次phase为1，在这时才进行具体的操作
+     *
+     */
+
+    //在第一个阶段不进行处理
+    if(!phase)
+    {
+        return ;
+    }
+    //图形项向不同方向随机移动
+    int value=qrand()%100;
+    if(value<25)
+    {
+        //rotate(45);
+        moveBy(qrand()%10,qrand()%10);
+    }
+    else if(value<50)
+    {
+        //rotate(-45);
+        moveBy(-qrand()%10,-qrand()%10);
+    }
+    else if(value<75)
+    {
+        //rotate(30);
+        moveBy(-qrand()%10,qrand()%10);
+    }
+    else
+    {
+        //rotate(-30);
+        moveBy(qrand()%10,-qrand()%10);
+    }
+}
+
+QPainterPath MyItem::shape()
+{
+    QPainterPath path;
+    path.addRect(-10,-10,20,20);
+    return path;
 }
